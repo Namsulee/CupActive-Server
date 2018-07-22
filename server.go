@@ -4,9 +4,9 @@ import (
 	"flag"
 	"html/template"
 	"log"
-    "errors"
+    	"errors"
 	"net/http"
-    "encoding/json"
+    	"encoding/json"
 	"github.com/gorilla/websocket"
 )
 
@@ -45,22 +45,22 @@ func start(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
-    
-    for {
-        _, msg, err := c.ReadMessage()
-        if err != nil {
-            log.Println("read:", err)
-            break
-        }
-        log.Printf("recv: %s", msg)
 
-        rcv := Command{}
-        json.Unmarshal([]byte(msg), &rcv)
-        log.Printf("cmd : [%s]", rcv.Cmd)
+	for {
+	_, msg, err := c.ReadMessage()
+	if err != nil {
+	    log.Println("read:", err)
+	    break
+	}
+	log.Printf("recv: %s", msg)
 
-        switch rcv.Cmd {
-        case "register":
-            log.Printf("command register device")
+	rcv := Command{}
+	json.Unmarshal([]byte(msg), &rcv)
+	log.Printf("cmd : [%s]", rcv.Cmd)
+
+	switch rcv.Cmd {
+	case "register":
+	    log.Printf("command register device")
             err := wsRegister(c, msg)
             if err == nil {
                 // Confirm message to register
