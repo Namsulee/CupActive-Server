@@ -1,0 +1,14 @@
+{
+	"name" : "setting",
+	"wifi" : { 
+			"enable": "true",
+			"ssid": "artik-tizen", 
+			"pw": "12345"
+		},
+	"ethernet" : { 
+			"enable": "false",
+			"ip": "1.2.3.4", 
+			"netmask": "255.255.255.0",
+			"gateway": "1.2.3.1"
+		}
+}

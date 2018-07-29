@@ -14,6 +14,9 @@ var addr = flag.String("addr", ":8080", "http service address")
 var upgrader = websocket.Upgrader{} // use default options
 var deviceList = make(map[string]Device)
 
+var webuiDir = "www-static"
+var contentsDir = "/www-static/"
+const contWebInfoFile = "cups.json"
 
 func wsRegister(c *websocket.Conn, message []byte) error {
     var dev Device
@@ -37,6 +40,71 @@ func wsRegister(c *websocket.Conn, message []byte) error {
 
     return err
 }
+/*
+// Static writeContainerListInfo writing web-ui json data which includes container info
+func writeContainerListInfo() error {
+
+    var err error
+    if _, err = os.Stat(contentsDir + "/" + contWebInfoFile); os.IsNotExist(err) {
+        log.Println("Error contwebinfo.json is not existed")
+    } else {
+        info, err := containermgt.GetAppInfo()
+
+        if err != nil {
+            log.Printf("[%s] Get Container List Info error [%s]", logPrefix, err)
+        } else {
+
+            var writeData webUIInfo
+
+            writeData.Title = containerLists
+
+            for _, container := range info.ContainerLists {
+
+                var List containerListsInfo
+
+                if container.Name != containermgt.DockzenAgentName {
+                    List.Name = container.Name
+                    List.IPAddress = container.IPAddress
+
+                    // web-ui can be shown only one port/hostport
+                    for _, port := range container.Ports {
+                        List.Port = fmt.Sprint(port.ContainerPort)
+                        List.HostPort = fmt.Sprint(port.HostPort)
+                    }
+
+                    writeData.Lists = append(writeData.Lists, List)
+
+                }
+            }
+
+            // Before writing
+            for i, list := range writeData.Lists {
+                log.Printf("[%s] C[%d] Name    :[%s]", logPrefix, i, list.Name)
+                log.Printf("[%s] C[%d] IP      :[%s]", logPrefix, i, list.IPAddress)
+            }
+
+            //file writing into json
+            f, err := os.Create(contentsDir + "/" + contWebInfoFile)
+            if err != nil {
+                log.Printf("[%s] contwebinfo file create error!!!", logPrefix)
+                return err
+            }
+
+            defer f.Close()
+
+            Lists, err := json.Marshal(writeData)
+
+            _, err = f.Write(Lists)
+            if err != nil {
+                log.Printf("[%s] writeContainerListInfo file write error", logPrefix)
+                return err
+            }
+
+        }
+    }
+
+    return err
+}*/
 
 func start(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -88,7 +156,7 @@ func start(w http.ResponseWriter, r *http.Request) {
                 send.Capability = dev.Capability
 
                 ws := dev.WS
-
+               
                 if err = ws.WriteJSON(send); err != nil {
                     log.Println(err)
                 }
@@ -105,14 +173,33 @@ func home(w http.ResponseWriter, r *http.Request) {
 	homeTemplate.Execute(w, "ws://"+r.Host+"/ws")
 }
 
+// Add http response headers to a response to disable caching
+func addNoCacheHeaders(handler http.Handler) http.HandlerFunc {
+
+    return func(writer http.ResponseWriter, request *http.Request) {
+
+        writer.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
+        writer.Header().Add("Pragma", "no-cache")
+        writer.Header().Add("Expires", "0")
+
+        handler.ServeHTTP(writer, request)
+    }
+}
+
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
 
-	http.HandleFunc("/ws", start)
-	http.HandleFunc("/", home)
+    router := http.NewServeMux()
 
-	log.Fatal(http.ListenAndServe(*addr, nil))
+    //http.HandleFunc("/ws", start)
+    //http.HandleFunc("/", home)
+    //log.Fatal(http.ListenAndServe(*addr, nil))
+
+    router.HandleFunc("/ws", start)
+    router.Handle("/", addNoCacheHeaders(http.FileServer(http.Dir(webuiDir))))
+
+    log.Fatal(http.ListenAndServe(*addr, router))
 }
 
 var homeTemplate = template.Must(template.New("").Parse(`
