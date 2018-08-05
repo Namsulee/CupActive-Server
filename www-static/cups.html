@@ -110,10 +110,10 @@ function display(jsonobj) {
   outstring = "<table class=mytable><thead><tr>";
   outstring += "<tr><th>ID</th><th>IP</th><th>How much can you drink?</th></thead><tbody>"
 
-  for (j in jsonobj.lists) {
+  for (j in jsonobj.Lists) {
       outstring += "<tr>";
-      outstring += "<td>" + jsonobj.lists[j].Name + "</td>";
-      outstring += "<td>" + jsonobj.lists[j].IPAddress + "</td>";
+      outstring += "<td>" + jsonobj.Lists[j].Name + "</td>";
+      outstring += "<td>" + jsonobj.Lists[j].IPAddress + "</td>";
       outstring += "<td><select name='number' id='number'><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></td>";
       outstring += "</tr>"
   }

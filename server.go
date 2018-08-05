@@ -3,20 +3,70 @@ package main
 import (
 	"flag"
 	"html/template"
+    "os"
 	"log"
-    	"errors"
+    "errors"
 	"net/http"
-    	"encoding/json"
+    "encoding/json"
 	"github.com/gorilla/websocket"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
 var upgrader = websocket.Upgrader{} // use default options
-var deviceList = make(map[string]Device)
+var deviceList []Device
 
 var webuiDir = "www-static"
 var contentsDir = "/www-static/"
 const contWebInfoFile = "cups.json"
+
+// Static writeCupsInfo writing web-ui json data which includes cups info
+func writeCupsInfo() error {
+
+    var err error
+    
+    if _, err = os.Stat(webuiDir + "/" + contWebInfoFile); os.IsNotExist(err) {
+        log.Println("Error contwebinfo.json is not existed")
+    } else {
+       
+        var writeData webUIInfo
+
+        writeData.Title = "Cup List"
+        for _, dev := range deviceList {
+            var List cupInfo
+
+            List.Name = dev.UniqueID
+            List.IPAddress = dev.IPAddress
+            List.Capability = dev.Capability
+
+            writeData.Lists = append(writeData.Lists, List)
+        }
+
+        // Before writing
+        for i, list := range writeData.Lists {
+            log.Printf("[%d] Name             :[%s]", i, list.Name)
+            log.Printf("[%d] IP               :[%s]", i, list.IPAddress)
+            log.Printf("[%d] Capability       :[%s]", i, list.Capability)
+        }
+
+        //file writing into json
+        f, err := os.Create(webuiDir + "/" + contWebInfoFile)
+        if err != nil {
+            log.Printf("contwebinfo file create error!!!")
+            return err
+        }
+
+        defer f.Close()
+
+        Lists, err := json.Marshal(writeData)
+        _, err = f.Write(Lists)
+        if err != nil {
+            log.Printf("writeContainerListInfo file write error")
+            return err
+        }
+    }
+
+    return err
+}
 
 func wsRegister(c *websocket.Conn, message []byte) error {
     var dev Device
@@ -27,12 +77,15 @@ func wsRegister(c *websocket.Conn, message []byte) error {
     json.Unmarshal([]byte(message), &rcv)
     log.Printf("cmd : [%s]", rcv.Cmd)
     log.Printf("id : [%s]", rcv.UniqueID)
+    log.Printf("ip : [%s]", rcv.IPAddress)
 
     if len(rcv.UniqueID) > 0 {
         dev.WS = c
         dev.UniqueID = rcv.UniqueID
-
-        deviceList[rcv.UniqueID] = dev
+        dev.IPAddress = rcv.IPAddress
+        deviceList = append(deviceList, dev)
+        // write cup list in json file
+        writeCupsInfo()
     } else {
         log.Printf("UniqueID is not existed")
         err = errors.New("UniqueID is not existed")
@@ -40,71 +93,6 @@ func wsRegister(c *websocket.Conn, message []byte) error {
 
     return err
 }
-/*
-// Static writeContainerListInfo writing web-ui json data which includes container info
-func writeContainerListInfo() error {
-
-    var err error
-    if _, err = os.Stat(contentsDir + "/" + contWebInfoFile); os.IsNotExist(err) {
-        log.Println("Error contwebinfo.json is not existed")
-    } else {
-        info, err := containermgt.GetAppInfo()
-
-        if err != nil {
-            log.Printf("[%s] Get Container List Info error [%s]", logPrefix, err)
-        } else {
-
-            var writeData webUIInfo
-
-            writeData.Title = containerLists
-
-            for _, container := range info.ContainerLists {
-
-                var List containerListsInfo
-
-                if container.Name != containermgt.DockzenAgentName {
-                    List.Name = container.Name
-                    List.IPAddress = container.IPAddress
-
-                    // web-ui can be shown only one port/hostport
-                    for _, port := range container.Ports {
-                        List.Port = fmt.Sprint(port.ContainerPort)
-                        List.HostPort = fmt.Sprint(port.HostPort)
-                    }
-
-                    writeData.Lists = append(writeData.Lists, List)
-
-                }
-            }
-
-            // Before writing
-            for i, list := range writeData.Lists {
-                log.Printf("[%s] C[%d] Name    :[%s]", logPrefix, i, list.Name)
-                log.Printf("[%s] C[%d] IP      :[%s]", logPrefix, i, list.IPAddress)
-            }
-
-            //file writing into json
-            f, err := os.Create(contentsDir + "/" + contWebInfoFile)
-            if err != nil {
-                log.Printf("[%s] contwebinfo file create error!!!", logPrefix)
-                return err
-            }
-
-            defer f.Close()
-
-            Lists, err := json.Marshal(writeData)
-
-            _, err = f.Write(Lists)
-            if err != nil {
-                log.Printf("[%s] writeContainerListInfo file write error", logPrefix)
-                return err
-            }
-
-        }
-    }
-
-    return err
-}*/
 
 func start(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -127,7 +115,7 @@ func start(w http.ResponseWriter, r *http.Request) {
 	log.Printf("cmd : [%s]", rcv.Cmd)
 
 	switch rcv.Cmd {
-	case "register":
+	   case "register":
 	    log.Printf("command register device")
             err := wsRegister(c, msg)
             if err == nil {
@@ -140,29 +128,31 @@ func start(w http.ResponseWriter, r *http.Request) {
                 }
             }
         case "usersetting":
-            data := Message{}
+            log.Printf("command usersetting")
+            data := UserSetting{}
             json.Unmarshal([]byte(msg), &data)
+            info := data.Cap
 
-            log.Printf("id [%s]", data.UniqueID)
-            log.Printf("cap [%d]", data.Capability)
+            for i, cup := range info {
+                log.Printf("capability[%d] [%d]", i,  cup)
+            }
 
-            if dev, ok := deviceList[data.UniqueID]; ok {
-                dev.UniqueID = data.UniqueID
-                dev.Capability = data.Capability
+            for i, dev := range deviceList {
+                dev.Capability = data.Cap[i]
 
                 send := UserSettingReq{}
                 send.Cmd = "usersetting"
                 send.UniqueID = dev.UniqueID 
                 send.Capability = dev.Capability
-
                 ws := dev.WS
                
                 if err = ws.WriteJSON(send); err != nil {
                     log.Println(err)
                 }
-            } else {
-                log.Printf("device is not registered with the UniqueID [%s] ", data.UniqueID)
+                
             }
+        case "gamesetting":
+            //data := Message{}
         default:
             log.Printf("Not support command {%s}", rcv.Cmd)
         }
@@ -191,10 +181,6 @@ func main() {
 	log.SetFlags(0)
 
     router := http.NewServeMux()
-
-    //http.HandleFunc("/ws", start)
-    //http.HandleFunc("/", home)
-    //log.Fatal(http.ListenAndServe(*addr, nil))
 
     router.HandleFunc("/ws", start)
     router.Handle("/", addNoCacheHeaders(http.FileServer(http.Dir(webuiDir))))
@@ -253,7 +239,7 @@ window.addEventListener("load", function(evt) {
         var jsonString = JSON.stringify(obj);
 
         ws.send(jsonString);
-        return false;
+        retukeyrn false;
     };
     document.getElementById("close").onclick = function(evt) {
         if (!ws) {

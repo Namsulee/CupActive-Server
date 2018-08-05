@@ -1,17 +1,1 @@
-{
-	"title" : "container lists",
-	"lists" : [
-		{
-			"Name":"namsu",
-			"IPAddress":"192.168.0.10",
-			"Capability":"0",
-			"HostPort":"8001"
-        },
-		{
-			"Name":"bongchae",
-			"IPAddress":"192.168.0.11",
-			"Capability":"0",
-			"HostPort":"8002"
-        }
-	]
-}
+{"title":"Cup List","Lists":[{"Name":"hero","IPAddress":"192.168.0.10","Capability":0,"HostPort":""},{"Name":"hero","IPAddress":"192.168.0.10","Capability":0,"HostPort":""}]}

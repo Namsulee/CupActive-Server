@@ -292,7 +292,7 @@ footer {
             <div class="content__wrapper">
                 <div class="cups">
                 </div>
-                <button class="button" id="send">SEND</button>
+                <button class="button" id="send">SETTING</button>
                 <button class="button" id="close">CLOSE</button>
             </div>
         </li>
@@ -413,6 +413,18 @@ footer {
       alert("test");
     }
 
+    function readTextFile(file, callback) {
+      var rawFile = new XMLHttpRequest();
+      rawFile.overrideMimeType("application/json");
+      rawFile.open("GET", file, true);
+      rawFile.onreadystatechange = function() {
+          if (rawFile.readyState === 4 && rawFile.status == "200") {
+              callback(rawFile.responseText);
+          }
+      }
+      rawFile.send(null);
+    }
+
     function display(jsonobj) {
       var outstring;
 
@@ -421,11 +433,11 @@ footer {
       outstring = "<div class=cups><table class=mytable><thead><tr>";
       outstring += "<tr><th>ID</th><th>IP</th><th>How much can you drink?</th></thead><tbody>"
 
-      for (j in jsonobj.lists) {
+      for (j in jsonobj.Lists) {
           outstring += "<tr>";
-          outstring += "<td>" + jsonobj.lists[j].Name + "</td>";
-          outstring += "<td>" + jsonobj.lists[j].IPAddress + "</td>";
-          outstring += "<td><select name='number' id='number'><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></td>";
+          outstring += "<td>" + jsonobj.Lists[j].Name + "</td>";
+          outstring += "<td>" + jsonobj.Lists[j].IPAddress + "</td>";
+          outstring += "<td><select name='number' id=number" + j + "><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></td>";
           outstring += "</tr>"
       }
       outstring += "</tbody></table></div>"
@@ -454,16 +466,33 @@ footer {
               return false;
           }
           // json create and send through ws
-          /*
           var obj = new Object();
           obj.cmd = "usersetting";
-          //obj.id  = name.value;
-          //obj.capability = Number(cap.value);
-          var jsonString = JSON.stringify(obj);
 
-          conn.send(jsonString);*/
+          console.log("here");
+          //usage:
+          readTextFile("cups.json", function(text){
+              var data = JSON.parse(text);
+              console.log(data);
+              var cap = [];
+
+              for (j in data.Lists) {
+                var id = "number" + j;
+                console.log(id);
+                cap.push(Number(document.getElementById(id).value));
+              }
+
+              obj.cap = cap;
+              console.log(obj);
+              var jsonString = JSON.stringify(obj);
+
+              conn.send(jsonString);
+          });
+
+          
           return false;
       };
+
       document.getElementById("close").onclick = function(evt) {
           if (!conn) {
               return false;
