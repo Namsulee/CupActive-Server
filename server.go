@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"html/template"
     "os"
 	"log"
     "errors"
+    "math/rand"
 	"net/http"
     "encoding/json"
 	"github.com/gorilla/websocket"
@@ -25,52 +25,59 @@ func writeCupsInfo() error {
     var err error
     
     if _, err = os.Stat(webuiDir + "/" + contWebInfoFile); os.IsNotExist(err) {
-        log.Println("Error contwebinfo.json is not existed")
+        log.Println("cups.json is not existed, it will be created")
     } else {
-       
-        var writeData webUIInfo
-
-        writeData.Title = "Cup List"
-        for _, dev := range deviceList {
-            var List cupInfo
-
-            List.Name = dev.UniqueID
-            List.IPAddress = dev.IPAddress
-            List.Capability = dev.Capability
-
-            writeData.Lists = append(writeData.Lists, List)
-        }
-
-        // Before writing
-        for i, list := range writeData.Lists {
-            log.Printf("[%d] Name             :[%s]", i, list.Name)
-            log.Printf("[%d] IP               :[%s]", i, list.IPAddress)
-            log.Printf("[%d] Capability       :[%s]", i, list.Capability)
-        }
-
-        //file writing into json
-        f, err := os.Create(webuiDir + "/" + contWebInfoFile)
+        // file delete and create
+        log.Println("cups.json would be removed")
+        err = os.Remove(webuiDir + "/" + contWebInfoFile)
         if err != nil {
-            log.Printf("contwebinfo file create error!!!")
-            return err
-        }
-
-        defer f.Close()
-
-        Lists, err := json.Marshal(writeData)
-        _, err = f.Write(Lists)
-        if err != nil {
-            log.Printf("writeContainerListInfo file write error")
-            return err
+            log.Printf("Error removing")
         }
     }
+       
+    var writeData webUIInfo
 
+    writeData.Title = "Cup List"
+    for _, dev := range deviceList {
+        var List cupInfo
+
+        List.Name = dev.UniqueID
+        List.IPAddress = dev.IPAddress
+        List.Capability = dev.Capability
+
+        writeData.Lists = append(writeData.Lists, List)
+    }
+
+    // Before writing
+    for i, list := range writeData.Lists {
+        log.Printf("[%d] Name             :[%s]", i, list.Name)
+        log.Printf("[%d] IP               :[%s]", i, list.IPAddress)
+        log.Printf("[%d] Capability       :[%s]", i, list.Capability)
+    }
+
+    //file writing into json
+    f, err := os.Create(webuiDir + "/" + contWebInfoFile)
+    if err != nil {
+        log.Printf("contwebinfo file create error!!!")
+        return err
+    }
+
+    defer f.Close()
+
+    Lists, err := json.Marshal(writeData)
+    _, err = f.Write(Lists)
+    if err != nil {
+        log.Printf("writeContainerListInfo file write error")
+        return err
+    }
+   
     return err
 }
 
 func wsRegister(c *websocket.Conn, message []byte) error {
     var dev Device
     var err error
+    var find bool
 
     rcv := ConnectReq{}
 
@@ -79,11 +86,28 @@ func wsRegister(c *websocket.Conn, message []byte) error {
     log.Printf("id : [%s]", rcv.UniqueID)
     log.Printf("ip : [%s]", rcv.IPAddress)
 
+    
     if len(rcv.UniqueID) > 0 {
-        dev.WS = c
-        dev.UniqueID = rcv.UniqueID
-        dev.IPAddress = rcv.IPAddress
-        deviceList = append(deviceList, dev)
+        for i, cup := range deviceList {
+            if cup.UniqueID == rcv.UniqueID {
+                find = true
+                log.Printf("find same index [%d]", i)
+                cup.WS = c
+                cup.UniqueID = rcv.UniqueID
+                cup.IPAddress = rcv.IPAddress
+
+                deviceList[i] = cup
+                break
+            }
+        }
+
+        if find != true {
+            dev.WS = c
+            dev.UniqueID = rcv.UniqueID
+            dev.IPAddress = rcv.IPAddress
+
+            deviceList = append(deviceList, dev)
+        }
         // write cup list in json file
         writeCupsInfo()
     } else {
@@ -92,6 +116,10 @@ func wsRegister(c *websocket.Conn, message []byte) error {
     }
 
     return err
+}
+
+func random(min, max int) int {
+    return rand.Intn(max - min) + min
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
@@ -151,16 +179,44 @@ func start(w http.ResponseWriter, r *http.Request) {
                 }
                 
             }
+        case "restart":
+            log.Printf("command restart")
+            send := Command{}
+            send.Cmd = "restart"
+
+            for _, dev := range deviceList {
+                ws := dev.WS
+                if err = ws.WriteJSON(send); err != nil {
+                    log.Println(err)
+                }
+            }
         case "gamesetting":
-            //data := Message{}
+            log.Printf("command gamesetting")
+            data := Message{}
+            json.Unmarshal([]byte(msg), &data)
+
+            send := GameSettingReq{}
+            send.Cmd = "gamesetting"
+            length := len(deviceList)
+            log.Printf("count [%d]", length)
+            for _, dev := range deviceList {
+                send.Kind = data.Kind + 1
+                send.GameState = data.GameState
+               
+                randomNum := rand.Intn(length+1)
+                
+                log.Printf("drink[%d]", randomNum)
+                send.Drink = randomNum
+                ws := dev.WS
+                if err = ws.WriteJSON(send); err != nil {
+                    log.Println(err)
+                }
+            }
+
         default:
             log.Printf("Not support command {%s}", rcv.Cmd)
         }
     }
-}
-
-func home(w http.ResponseWriter, r *http.Request) {
-	homeTemplate.Execute(w, "ws://"+r.Host+"/ws")
 }
 
 // Add http response headers to a response to disable caching
@@ -187,87 +243,3 @@ func main() {
 
     log.Fatal(http.ListenAndServe(*addr, router))
 }
-
-var homeTemplate = template.Must(template.New("").Parse(`
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<script>  
-window.addEventListener("load", function(evt) {
-    var output = document.getElementById("output");
-    var name = document.getElementById("name");
-    var cap = document.getElementById("cap");
-
-    var ws;
-    var print = function(message) {
-        var d = document.createElement("div");
-        d.innerHTML = message;
-        output.appendChild(d);
-    };
-    document.getElementById("open").onclick = function(evt) {
-        if (ws) {
-            return false;
-        }
-        ws = new WebSocket("{{.}}");
-        ws.onopen = function(evt) {
-            print("OPEN");
-        }
-        ws.onclose = function(evt) {
-            print("CLOSE");
-            ws = null;
-        }
-        ws.onmessage = function(evt) {
-            print("RESPONSE: " + evt.data);
-        }
-        ws.onerror = function(evt) {
-            print("ERROR: " + evt.data);
-        }
-        return false;
-    };
-    document.getElementById("send").onclick = function(evt) {
-        if (!ws) {
-            return false;
-        }
-        print("SEND: " + name.value);
-        print("SEND: " + cap.value);
-        
-        var obj = new Object();
-        obj.cmd = "usersetting";
-        obj.id  = name.value;
-        obj.capability = Number(cap.value);
-        var jsonString = JSON.stringify(obj);
-
-        ws.send(jsonString);
-        retukeyrn false;
-    };
-    document.getElementById("close").onclick = function(evt) {
-        if (!ws) {
-            return false;
-        }
-        ws.close();
-        return false;
-    };
-});
-</script>
-</head>
-<body>
-<table>
-<tr><td valign="top" width="50%">
-<p>Click "Open" to create a connection to the server, 
-"Send" to send a message to the server and "Close" to close the connection. 
-You can change the message and send multiple times.
-<p>
-<form>
-<button id="open">Open</button>
-<button id="close">Close</button>
-<p><input id="name" type="text" value="namsu">
-<p><input id="cap" type="number" value=10>
-<button id="send">Send</button>
-</form>
-</td><td valign="top" width="50%">
-<div id="output"></div>
-</td></tr></table>
-</body>
-</html>
-`))

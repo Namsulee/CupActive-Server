@@ -22,6 +22,14 @@ type UserSettingReq struct {
 	Capability	int    `json:"capability"`
 }
 
+// GameSettingReq structure contains request information for web server.
+type GameSettingReq struct {
+	Cmd  		string `json:"cmd"`
+	UniqueID 	string `json:"id"`
+	Kind		int    `json:"kind"`
+	GameState   int    `json:"state"`
+	Drink		int    `json:"drink"`
+}
 // Define our message object
 type Message struct {
 	Cmd 		string `json:"cmd"`

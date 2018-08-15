@@ -147,6 +147,7 @@ footer {
 .colors {
   text-align: center;
   padding-top: 20px;
+  font-size:0.6em;
 }
 .colors > li {
   list-style: none;
@@ -189,64 +190,71 @@ footer {
 }
 
 .mytable table {
-    width: 100%;
-    border: 1px solid #444444;
-    border-collapse: collapse;
-  }
+  width: 100%;
+  border: 1px solid #444444;
+  border-collapse: collapse;
+}
 
-  .mytable th {
-      width: 5%;
-      background-color: #1EA4FF;
-      color:#FFFFFF;
-  }
+.mytable th {
+    width: 5%;
+    background-color: #1EA4FF;
+    color:#FFFFFF;
+}
 
-  .mytable,.mytable th,.mytable td {
-    font-size:0.95em;
-    text-align:center;
-    padding:4px;
-    border-collapse:collapse;
-    margin-bottom:20px;
-  }
+.mytable,.mytable th,.mytable td {
+  font-size:0.95em;
+  text-align:center;
+  padding:4px;
+  border-collapse:collapse;
+  margin-bottom:20px;
+}
 
-  .mytable th,.mytable td {
-    border: 1px solid #7ecbfe;
-    border-width: 1px 0 1px 0
-    margin:10px;
-  }
-  .mytable tr {
-    border: 1px solid #7ecbfe;
-  }
-  .mytable tr:nth-child(odd) {
-    background-color:#b4e0fe;
-  }
-  .mytable tr:nth-child(even) {
-    background-color:#fdfdfd;
-  }
-  select {
-    width:100px;
-    height:30px;
-    padding-left:10px;
-    font-size:18px;
-    color:#006fff;
-    border:1px solid #006fff;
-    border-radius:3px;
-  }
-  .button {
-    background: #46a1de;
-    border:0;
-    border-radius:3px;
-    color:white;
-    padding:15px 32px;
-    text-align: center;
-    text-decoration:none;
-    display:inline-block;
-    font-size:20px;
-    margin-left:30px;
-    outline:none;
-  }
-  .button:active {
-    background-color: #9ececc;
-  }
+.mytable th,.mytable td {
+  border: 1px solid #7ecbfe;
+  border-width: 1px 0 1px 0
+  margin:10px;
+}
+.mytable tr {
+  border: 1px solid #7ecbfe;
+}
+.mytable tr:nth-child(odd) {
+  background-color:#b4e0fe;
+}
+.mytable tr:nth-child(even) {
+  background-color:#fdfdfd;
+}
+select {
+  width:100px;
+  height:30px;
+  padding-left:10px;
+  font-size:18px;
+  color:#006fff;
+  border:1px solid #006fff;
+  border-radius:3px;
+}
+.button {
+  background: #46a1de;
+  border:0;
+  border-radius:3px;
+  color:white;
+  padding:10px 32px;
+  text-align: center;
+  text-decoration:none;
+  display:inline-block;
+  font-size:20px;
+  margin-left:30px;
+  outline:none;
+}
+.button:hover {
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+  border-bottom: 10px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+}
+.button:active {
+  background-color: #9ececc;
+}
+
 </style>
 <script>
   window.console = window.console || function(t) {};
@@ -285,7 +293,8 @@ footer {
                      <li>Random</li>
                      <li>LoveShot</li>
                 </ul>
-                
+                <button class="button" id="game">READY</button> 
+
             </div>
         </li>
         <li class="active">
@@ -293,7 +302,7 @@ footer {
                 <div class="cups">
                 </div>
                 <button class="button" id="send">SETTING</button>
-                <button class="button" id="close">CLOSE</button>
+                <button class="button" id="restart">RESTART</button>
             </div>
         </li>
         <li>
@@ -367,6 +376,7 @@ footer {
                 if (clickedTabIndex == 1) {
                   reload();
                 }
+
             });
         });
 
@@ -468,8 +478,6 @@ footer {
           // json create and send through ws
           var obj = new Object();
           obj.cmd = "usersetting";
-
-          console.log("here");
           //usage:
           readTextFile("cups.json", function(text){
               var data = JSON.parse(text);
@@ -493,13 +501,57 @@ footer {
           return false;
       };
 
-      document.getElementById("close").onclick = function(evt) {
+      document.getElementById("restart").onclick = function(evt) {
           if (!conn) {
               return false;
           }
-          conn.close();
+
+          var obj = new Object();
+          obj.cmd = "restart";
+          var jsonString = JSON.stringify(obj);
+
+          conn.send(jsonString);
+
           return false;
       };
+
+      document.getElementById("game").onclick = function(evt) {
+          console.log("game button pressed");
+            var name = $('#game').text();
+            console.log(name);
+            var obj = new Object();
+            obj.cmd = "gamesetting";
+            clickedGame = $(".colors .active-color");
+            console.log(clickedGame.index());
+
+            obj.kind = clickedGame.index()
+            if (name == "START") {
+              obj.state = 1 // start
+              var jsonString = JSON.stringify(obj);
+              conn.send(jsonString);
+              $('#game').text("STOP");
+            } else if (name == "STOP") {
+              // send the cup to drink
+              obj.state = 2 // finish
+
+              readTextFile("cups.json", function(text){
+                  var data = JSON.parse(text);
+                  console.log(data);
+                  console.log("length :" + data.Lists.length);
+
+                  // select random cup to send
+                 
+                  var jsonString = JSON.stringify(obj);
+                  conn.send(jsonString);
+              });
+              $('#game').text("READY");
+            } else if (name == "READY") {
+              obj.state = 0 // ready
+              var jsonString = JSON.stringify(obj);
+              conn.send(jsonString);
+              $('#game').text("START");
+            }
+        };
     });
   </script>
 </body>
