@@ -146,17 +146,18 @@ footer {
 
 .colors {
   text-align: center;
-  padding-top: 20px;
   font-size:0.6em;
 }
 .colors > li {
+  vertical-align:center;
+  line-height: 100px;
   list-style: none;
   width: 100px;
   height: 100px;
   border-radius: 50%;
   border-bottom: 5px solid rgba(0, 0, 0, 0.1);
   display: inline-block;
-  margin: 0 40px;
+  margin: 0 30px;
   cursor: pointer;
   transition-duration: .2s;
   box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
@@ -242,12 +243,11 @@ select {
   text-decoration:none;
   display:inline-block;
   font-size:20px;
-  margin-left:30px;
   outline:none;
 }
 .button:hover {
-  -webkit-transform: scale(1.2);
-  transform: scale(1.2);
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
   border-bottom: 10px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
 }
@@ -286,14 +286,10 @@ select {
                 <h2 class="text-color">Pick a game</h2>
                 
                 <ul class="colors">
-                    <li data-color="#2ecc71"></li>
-                    <li data-color="#D64A4B"></li>
+                    <li id="random" data-color="#2ecc71">Random</li>
+                    <li id="loveshot" data-color="#D64A4B">LoveShot</li>
                 </ul>
-                <ul class="colors-name">
-                     <li>Random</li>
-                     <li>LoveShot</li>
-                </ul>
-                <button class="button" id="game">READY</button> 
+                <button class="button" id="game">START</button> 
 
             </div>
         </li>
@@ -515,6 +511,32 @@ select {
           return false;
       };
 
+      document.getElementById("random").onclick = function(evt) {
+        console.log("random");
+        var name = $('#random').text();
+        console.log(name);
+        var obj = new Object();
+        obj.cmd = "gamesetting";
+        clickedGame = $(".colors .active-color");
+        obj.kind = clickedGame.index()
+        if (name == "Random") {
+          obj.state = 0 // ready
+          readTextFile("cups.json", function(text){
+              var data = JSON.parse(text);
+              console.log(data);
+              console.log("length :" + data.Lists.length);
+              // select random cup to send
+              var jsonString = JSON.stringify(obj);
+              conn.send(jsonString);
+              $('#random').text("READY");
+          });
+        }
+      };
+
+      document.getElementById("loveshot").onclick = function(evt) {
+        console.log("loveshot");
+      };
+
       document.getElementById("game").onclick = function(evt) {
           console.log("game button pressed");
             var name = $('#game').text();
@@ -526,31 +548,18 @@ select {
 
             obj.kind = clickedGame.index()
             if (name == "START") {
-              obj.state = 1 // start
-              var jsonString = JSON.stringify(obj);
-              conn.send(jsonString);
-              $('#game').text("STOP");
-            } else if (name == "STOP") {
               // send the cup to drink
-              obj.state = 2 // finish
-
+              obj.state = 1 // atart
               readTextFile("cups.json", function(text){
                   var data = JSON.parse(text);
                   console.log(data);
                   console.log("length :" + data.Lists.length);
-
                   // select random cup to send
-                 
                   var jsonString = JSON.stringify(obj);
                   conn.send(jsonString);
+                  $('#random').text("Random");
               });
-              $('#game').text("READY");
-            } else if (name == "READY") {
-              obj.state = 0 // ready
-              var jsonString = JSON.stringify(obj);
-              conn.send(jsonString);
-              $('#game').text("START");
-            }
+            } 
         };
     });
   </script>

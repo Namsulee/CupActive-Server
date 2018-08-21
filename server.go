@@ -5,6 +5,7 @@ import (
     "os"
 	"log"
     "errors"
+    "time"
     "math/rand"
 	"net/http"
     "encoding/json"
@@ -199,20 +200,38 @@ func start(w http.ResponseWriter, r *http.Request) {
             send.Cmd = "gamesetting"
             length := len(deviceList)
             log.Printf("count [%d]", length)
-            for _, dev := range deviceList {
-                send.Kind = data.Kind + 1
-                send.GameState = data.GameState
-               
-                randomNum := rand.Intn(length+1)
-                
-                log.Printf("drink[%d]", randomNum)
-                send.Drink = randomNum
-                ws := dev.WS
-                if err = ws.WriteJSON(send); err != nil {
-                    log.Println(err)
+            send.Kind = data.Kind + 1
+            if data.GameState == 0 {  // by image button
+                // game ready
+                send.GameState = 0
+                for _, dev := range deviceList {
+                    ws := dev.WS
+                    if err = ws.WriteJSON(send); err != nil {
+                        log.Println(err)
+                    }
+                }
+            } else if data.GameState == 1 { // by start button
+                send.GameState = 1
+                for _, dev := range deviceList {
+                    ws := dev.WS
+                    if err = ws.WriteJSON(send); err != nil {
+                        log.Println(err)
+                    }
+                }
+                // 5 second later
+                time.Sleep(time.Second * 5)
+                send.GameState = 2
+                for _, dev := range deviceList {
+                    randomNum := rand.Intn(length+1)
+                    
+                    log.Printf("drink[%d]", randomNum)
+                    send.Drink = randomNum
+                    ws := dev.WS
+                    if err = ws.WriteJSON(send); err != nil {
+                        log.Println(err)
+                    }
                 }
             }
-
         default:
             log.Printf("Not support command {%s}", rcv.Cmd)
         }
