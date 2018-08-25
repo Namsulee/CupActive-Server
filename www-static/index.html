@@ -2,10 +2,8 @@
 <html lang="en" class="bg-color">
 <head>
   <meta charset="UTF-8">
-  <link rel="shortcut icon" type="image/x-icon" href="https://static.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico" />
-  <link rel="mask-icon" type="" href="https://static.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg" color="#111" />
   <title>SoolSang Web UI</title>
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+ 
 <style >
 * {
   box-sizing: border-box;
@@ -310,8 +308,8 @@ select {
         </li>
     </ul>
 </section>
-  <script src="//static.codepen.io/assets/common/stopExecutionOnTimeout-41c52890748cd7143004e05d3c5f786c66b19939c4500ce446314d1748483e13.js"></script>
-  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src="./codepen.js"></script>
+  <script src='./jquery-3.3.1.min.js'></script>
   <script>
     $(document).ready(function () {
         // Variables
@@ -451,6 +449,11 @@ select {
       $('.cups').html(outstring);
     }
 
+    function sleep(delay) {
+      var start = new Date().getTime();
+      while (new Date().getTime() < start + delay);
+    }
+
     window.addEventListener("load", function(evt) {
       var conn;
 
@@ -469,7 +472,7 @@ select {
 
       document.getElementById("send").onclick = function(evt) {
           if (!conn) {
-              return false;
+            return false;
           }
           // json create and send through ws
           var obj = new Object();
@@ -499,7 +502,7 @@ select {
 
       document.getElementById("restart").onclick = function(evt) {
           if (!conn) {
-              return false;
+            return false;
           }
 
           var obj = new Object();
@@ -513,6 +516,9 @@ select {
 
       document.getElementById("random").onclick = function(evt) {
         console.log("random");
+        if (!conn) {
+          return false;
+        }
         var name = $('#random').text();
         console.log(name);
         var obj = new Object();
@@ -535,6 +541,9 @@ select {
 
       document.getElementById("loveshot").onclick = function(evt) {
         console.log("loveshot");
+        if (!conn) {
+          return false;
+        }
       };
 
       document.getElementById("game").onclick = function(evt) {

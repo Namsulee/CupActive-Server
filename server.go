@@ -201,16 +201,20 @@ func start(w http.ResponseWriter, r *http.Request) {
             length := len(deviceList)
             log.Printf("count [%d]", length)
             send.Kind = data.Kind + 1
+            log.Printf("kind [%d]", send.Kind)
             if data.GameState == 0 {  // by image button
                 // game ready
+                log.Printf("ready state")
                 send.GameState = 0
                 for _, dev := range deviceList {
+                    log.Printf("here")
                     ws := dev.WS
                     if err = ws.WriteJSON(send); err != nil {
                         log.Println(err)
                     }
                 }
             } else if data.GameState == 1 { // by start button
+                log.Printf("start state")
                 send.GameState = 1
                 for _, dev := range deviceList {
                     ws := dev.WS
