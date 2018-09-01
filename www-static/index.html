@@ -13,9 +13,10 @@
 
 body {
   font-family: 'Open Sans', sans-serif;
-  color: #50555a;
+  color: #494949;
   padding: 100px 20px;
-  font-size: 30px;
+  font-size: 25px;
+  vertical-align:center;
 }
 
 nav {
@@ -31,19 +32,19 @@ nav {
 }
 
 .bg-color {
-  background-color: #46a1de;
+  background-color: #1780E0;
   transition-duration: .5s;
 }
 
 .text-color {
-  color: #46a1de;
+  color: #494949;
   transition-duration: .5s;
 }
 
 footer {
   padding: 40px 0;
   text-align: center;
-  opacity: .33;
+  opacity: .77;
   color: white;
 }
 
@@ -54,6 +55,9 @@ footer {
 }
 
 .tabs {
+  line-height: 30px;
+  border:1px solid #494949;
+  vertical-align:middle;
   display: table;
   table-layout: fixed;
   width: 100%;
@@ -63,13 +67,17 @@ footer {
 .tabs > li {
   transition-duration: .25s;
   display: table-cell;
+  border:1px solid #494949;
+  border-collapse : collapse;
   list-style: none;
   text-align: center;
-  padding: 20px 20px 25px 20px;
+  vertical-align:middle;
+  padding: 10px 20px 15px 20px;
   position: relative;
   overflow: hidden;
   cursor: pointer;
   color: white;
+  white-space: nowrap;
 }
 .tabs > li:before {
   z-index: -1;
@@ -83,15 +91,15 @@ footer {
   -webkit-transform: translateY(100%);
   transform: translateY(100%);
   transition-duration: .25s;
-  border-radius: 5px 5px 0 0;
 }
 .tabs > li:hover:before {
   -webkit-transform: translateY(70%);
   transform: translateY(70%);
 }
 .tabs > li.active {
-  color: #50555a;
+  color: #494949;
 }
+
 .tabs > li.active:before {
   transition-duration: .5s;
   background-color: white;
@@ -103,7 +111,7 @@ footer {
   background-color: white;
   position: relative;
   width: 100%;
-  border-radius: 5px;
+  border:2px solid #444444;
 }
 .tab__content > li {
   width: 100%;
@@ -115,22 +123,57 @@ footer {
 }
 .tab__content > li .content__wrapper {
   text-align: center;
-  border-radius: 5px;
   width: 100%;
-  padding: 45px 40px 40px 40px;
+  height:350px;
+  padding:40px 40px;
   background-color: white;
 }
 
-.content__wrapper h2 {
+.attend h2 {
   width: 100%;
+  margin:0 auto;
   text-align: center;
-  padding-bottom: 20px;
   font-weight: 300;
+  position:relative;
+  padding-bottom:20px;
 }
-.content__wrapper img {
-  width: 100%;
+.gameicon img {
+  width: 150px;
   height: auto;
-  border-radius: 5px;
+  padding-bottom:20px;
+  position:relative;
+}
+
+.randombutton {
+  background: #2EAFA3;
+  border:0;
+  border-radius:10px;
+  color:white;
+  text-align: center;
+  position:relative;
+  font-size:20px;
+  margin:0 auto;
+  padding:10px 100px;
+}
+
+.randombutton:active {
+  background-color: #a5e5df;
+}
+
+.lovebutton {
+  background: #C11F61;
+  border:0;
+  border-radius:10px;
+  color:white;
+  text-align: center;
+  position:relative;
+  font-size:20px;
+  margin:0 auto;
+  padding:10px 100px;
+}
+
+.lovebutton:active {
+  background-color: #f7b7d1;
 }
 
 .colors-name {
@@ -146,47 +189,6 @@ footer {
   text-align: center;
   font-size:0.6em;
 }
-.colors > li {
-  vertical-align:center;
-  line-height: 100px;
-  list-style: none;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border-bottom: 5px solid rgba(0, 0, 0, 0.1);
-  display: inline-block;
-  margin: 0 30px;
-  cursor: pointer;
-  transition-duration: .2s;
-  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
-}
-.colors > li:hover {
-  -webkit-transform: scale(1.2);
-  transform: scale(1.2);
-  border-bottom: 10px solid rgba(0, 0, 0, 0.15);
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-}
-.colors > li.active-color {
-  -webkit-transform: scale(1.2) translateY(-10px);
-  transform: scale(1.2) translateY(-10px);
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-  border-bottom: 20px solid rgba(0, 0, 0, 0.15);
-}
-.colors > li:nth-child(1) {
-  background-color: #2ecc71;
-}
-.colors > li:nth-child(2) {
-  background-color: #D64A4B;
-}
-.colors > li:nth-child(3) {
-  background-color: #8e44ad;
-}
-.colors > li:nth-child(4) {
-  background-color: #46a1de;
-}
-.colors > li:nth-child(5) {
-  background-color: #bdc3c7;
-}
 
 .mytable table {
   width: 100%;
@@ -196,7 +198,7 @@ footer {
 
 .mytable th {
     width: 5%;
-    background-color: #1EA4FF;
+    background-color: #1780E0;
     color:#FFFFFF;
 }
 
@@ -209,48 +211,47 @@ footer {
 }
 
 .mytable th,.mytable td {
-  border: 1px solid #7ecbfe;
+  border: 1px solid #1B94EF;
   border-width: 1px 0 1px 0
   margin:10px;
 }
 .mytable tr {
-  border: 1px solid #7ecbfe;
+  border: 1px solid #1B94EF;
+  color: #494949
 }
 .mytable tr:nth-child(odd) {
-  background-color:#b4e0fe;
+  background-color:#fdfdfd;
 }
 .mytable tr:nth-child(even) {
-  background-color:#fdfdfd;
+  background-color:#b4e0fe;
 }
 select {
   width:100px;
   height:30px;
   padding-left:10px;
   font-size:18px;
-  color:#006fff;
+  color:#494949;
   border:1px solid #006fff;
   border-radius:3px;
 }
-.button {
-  background: #46a1de;
+.settingbutton {
+  background: #1780E0;
   border:0;
-  border-radius:3px;
+  border-radius:10px;
   color:white;
-  padding:10px 32px;
+  padding:10px 35px; 
+  position:relative;
+  font-size:20px;
+  text-align:relative;
   text-align: center;
   text-decoration:none;
   display:inline-block;
   font-size:20px;
   outline:none;
 }
-.button:hover {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-  border-bottom: 10px solid rgba(0, 0, 0, 0.15);
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-}
-.button:active {
-  background-color: #9ececc;
+
+.settingbutton:active {
+  background-color: #7fbcf4;
 }
 
 </style>
@@ -266,47 +267,57 @@ select {
 
 
 </head>
-
 <body translate="no" >
 
-  <nav class="bg-color">Joyful SoolSang</nav>
+  <nav class="bg-color"></br>Joyful SoolSang</nav>
 
 <section class="wrapper">
     <ul class="tabs">
-        <li>Games</li>
-        <li class="active">Connected Cups</li>
-        <li>About</li>
+        <li><p>Random</p><p>Game</p></li>
+        <li><p>Love Shot</p><p>Game</p></li>
+        <li class="active"><p>Settings</p></li>
     </ul>
 
     <ul class="tab__content">
         <li>
             <div class="content__wrapper">
-                <h2 class="text-color">Pick a game</h2>
-                
-                <ul class="colors">
-                    <li id="random" data-color="#2ecc71">Random</li>
-                    <li id="loveshot" data-color="#D64A4B">LoveShot</li>
-                </ul>
-                <button class="button" id="game">START</button> 
-
-            </div>
-        </li>
-        <li class="active">
-            <div class="content__wrapper">
-                <div class="cups">
+                <div class="attend">
+                  <h2 id=rg_text>XX 명 게임 참여 중</h2>
                 </div>
-                <button class="button" id="send">SETTING</button>
-                <button class="button" id="restart">RESTART</button>
+                <div class="gameicon">
+                  <img id=rg_img src="images/icon_rg_nor.png" />
+                </div>
+                <div>
+                  <button class="randombutton" id="rg_game_bt">Ready</button>
+                </div>
             </div>
         </li>
         <li>
             <div class="content__wrapper">
-                <h2 class="text-color">About</h2>
-                
-                <p>Created by <a class="text-color" target="_blank">SoolDongMu</p>
+                <div class="attend">
+                  <h2 id=lg_text>XX 명 게임 참여 중</h2>
+                </div>
+                <div class="gameicon">
+                  <img id=lg_img src="images/icon_lg_nor.png" />
+                </div>
+                <div>
+                  <button class="lovebutton" id="lg_game_bt">Ready</button>
+                </div>
+            </div>
+        </li>        
+        <li class="active">
+            <div class="content__wrapper">
+                <div class="cups">
+                </div>
+                <div>
+                  <button class="settingbutton" id="send">SETTING</button>
+                  <button class="settingbutton" id="restart">RESTART</button>
+                </div>
             </div>
         </li>
+        
     </ul>
+    <footer class="footer">Created by Sooldongmoo</footer>
 </section>
   <script src="./codepen.js"></script>
   <script src='./jquery-3.3.1.min.js'></script>
@@ -317,7 +328,6 @@ select {
         var tabWrapper = $(".tab__content");
         var activeTab = tabWrapper.find(".active");
         var activeTabHeight = activeTab.outerHeight();
-
         // Show tab on page load
         activeTab.show();
         reload();
@@ -331,9 +341,8 @@ select {
             $(".tabs > li").removeClass("active");
             $(".colors > li").removeClass("active-color");
             
-
-            $(".bg-color").css("background-color", "#46a1de");
-            $(".text-color").css("color", "#46a1de");
+            
+            $(".bg-color").css("background-color", "#1780E0");
 
             // Add class active to clicked tab
             $(this).addClass("active");
@@ -348,13 +357,12 @@ select {
 
                 // Get index of clicked tab
                 var clickedTabIndex = clickedTab.index();
-
                 // Add class active to corresponding tab
                 $(".tab__content > li").eq(clickedTabIndex).addClass("active");
 
                 // update new active tab
                 activeTab = $(".tab__content > .active");
-
+                console.log(activeTab);
                 // Update variable
                 activeTabHeight = activeTab.outerHeight();
 
@@ -367,7 +375,19 @@ select {
 
                 });
 
-                if (clickedTabIndex == 1) {
+                if (clickedTabIndex == 0) { // random game
+                  console.log("random");
+                  checkCups("#rg_text");
+                  $(".bg-color").css("background-color", "#2EAFA3");
+                  $(".gamebutton").css("background", "#2EAFA3");
+
+                } else if (clickedTabIndex == 1) { // love shot game
+                  console.log("lovshot");
+                  checkCups("#lg_text");
+                  $(".bg-color").css("background-color", "#C11F61");
+                  $(".gamebutton").css("background", "#C11F61");
+                } else if (clickedTabIndex == 2) { // setting
+                  console.log("setting");
                   reload();
                 }
 
@@ -386,7 +406,6 @@ select {
           // Change background of everything with class .bg-color
           $(".bg-color").css("background-color", newColor);
           // Change color of everything with class .text-color
-          $(".text-color").css("color", newColor);
         });
     });
     
@@ -409,6 +428,34 @@ select {
           console.log("reload completed~~~");
         }
       };
+      xmlhttp.open("GET", filePath, true);
+      xmlhttp.send();
+    }
+
+    function checkCups(tabs) {
+      var cnt = 0;
+      var filePath = "cups.json"
+      var result = null;
+      var jsonobj = null;
+      var xmlhttp = new XMLHttpRequest();
+
+      xmlhttp.onreadystatechange = function() {
+        console.log("xmlhttp.status =" + this.status);
+        if (this.readyState == 4 && this.status == 200) {
+          console.log("xmlhttp.responseText =" + this.responseText);
+          result = xmlhttp.responseText;
+          jsonobj = JSON.parse(result);
+
+          for (j in jsonobj.Lists) {
+            cnt++;
+          }
+          console.log("cup is" + cnt);
+          var inputString = cnt + "명 게임 참여 중";
+          $(tabs).text(inputString);
+           $('#rg_text').text(inputString);
+        }
+      };
+
       xmlhttp.open("GET", filePath, true);
       xmlhttp.send();
     }
@@ -470,7 +517,7 @@ select {
           }
       };
 
-      document.getElementById("send").onclick = function(evt) {
+      /*document.getElementById("send").onclick = function(evt) {
           if (!conn) {
             return false;
           }
@@ -512,41 +559,118 @@ select {
           conn.send(jsonString);
 
           return false;
-      };
+      };*/
 
-      document.getElementById("random").onclick = function(evt) {
-        console.log("random");
+      document.getElementById("rg_game_bt").onclick = function(evt) {
+        console.log("randombutton");
         if (!conn) {
           return false;
         }
-        var name = $('#random').text();
+        var name = $('#rg_game_bt').text();
         console.log(name);
+
         var obj = new Object();
         obj.cmd = "gamesetting";
         clickedGame = $(".colors .active-color");
-        obj.kind = clickedGame.index()
-        if (name == "Random") {
-          obj.state = 0 // ready
+        obj.kind = 1; //random game
+        
+        if (name == "Ready") {
+          obj.state = 0; // ready
+          $('#rg_game_bt').text("Start");
+          $('#rg_img').attr("src","images/icon_rg_ready.png");
           readTextFile("cups.json", function(text){
+            var data = JSON.parse(text);
+            console.log(data);
+            console.log("length :" + data.Lists.length);
+            // select random cup to send
+            var jsonString = JSON.stringify(obj);
+            conn.send(jsonString);
+          });
+        } else if (name == "Start") {
+          obj.state = 1; // ready
+          $('#rg_game_bt').text("Selecting...");
+          $('#rg_img').attr("src","images/icon_rg_selecting.png");
+          console.log("here");
+          readTextFile("cups.json", function(text){
+            var data = JSON.parse(text);
+            console.log(data);
+            console.log("length :" + data.Lists.length);
+            // select random cup to send
+            var jsonString = JSON.stringify(obj);
+            conn.send(jsonString);
+          });
+  
+          setTimeout(function() {
+            $('#rg_game_bt').text("Ready");
+            $('#rg_img').attr("src","images/icon_rg_done.png");
+            readTextFile("cups.json", function(text){
               var data = JSON.parse(text);
               console.log(data);
               console.log("length :" + data.Lists.length);
               // select random cup to send
               var jsonString = JSON.stringify(obj);
               conn.send(jsonString);
-              $('#random').text("READY");
-          });
+            });
+          }, 5000);
         }
       };
 
-      document.getElementById("loveshot").onclick = function(evt) {
-        console.log("loveshot");
+      document.getElementById("lg_game_bt").onclick = function(evt) {
+        console.log("loveshotbutton");
         if (!conn) {
           return false;
         }
+        var name = $('#lg_game_bt').text();
+        console.log(name);
+
+        var obj = new Object();
+        obj.cmd = "gamesetting";
+        clickedGame = $(".colors .active-color");
+        obj.kind = 2; //loveshot game
+        
+        if (name == "Ready") {
+          obj.state = 0 // ready
+          $('#lg_game_bt').text("Start");
+          $('#lg_img').attr("src","images/icon_lg_ready.png");
+          readTextFile("cups.json", function(text){
+            var data = JSON.parse(text);
+            console.log(data);
+            console.log("length :" + data.Lists.length);
+            // select random cup to send
+            var jsonString = JSON.stringify(obj);
+            conn.send(jsonString);
+          });
+        } else if (name == "Start") {
+          obj.state = 1 // ready
+          $('#lg_game_bt').text("Selecting...");
+          $('#lg_img').attr("src","images/icon_lg_selecting.png");
+          readTextFile("cups.json", function(text){
+            var data = JSON.parse(text);
+            console.log(data);
+            console.log("length :" + data.Lists.length);
+            // select random cup to send
+            var jsonString = JSON.stringify(obj);
+            conn.send(jsonString);
+          });
+
+          setTimeout(function() {
+            $('#lg_game_bt').text("Ready");
+            $('#ㅣg_img').attr("src","images/icon_lg_done.png");
+            readTextFile("cups.json", function(text){
+              var data = JSON.parse(text);
+              console.log(data);
+              console.log("length :" + data.Lists.length);
+              // select random cup to send
+              var jsonString = JSON.stringify(obj);
+              conn.send(jsonString);
+            });
+          }, 5000);
+
+        }
       };
 
-      document.getElementById("game").onclick = function(evt) {
+
+      /*document.getElementById("game").onclick = function(evt) {
           console.log("game button pressed");
             var name = $('#game').text();
             console.log(name);
@@ -569,8 +693,8 @@ select {
                   $('#random').text("Random");
               });
             } 
-        };
-    });
+        };*/
+    })
   </script>
 </body>
 </html>
