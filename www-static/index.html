@@ -380,12 +380,14 @@ select {
                   checkCups("#rg_text");
                   $(".bg-color").css("background-color", "#2EAFA3");
                   $(".gamebutton").css("background", "#2EAFA3");
+                  $('#rg_img').attr("src","images/icon_rg_nor.png");
 
                 } else if (clickedTabIndex == 1) { // love shot game
                   console.log("lovshot");
                   checkCups("#lg_text");
                   $(".bg-color").css("background-color", "#C11F61");
                   $(".gamebutton").css("background", "#C11F61");
+                  $('#lg_img').attr("src","images/icon_lg_nor.png");
                 } else if (clickedTabIndex == 2) { // setting
                   console.log("setting");
                   reload();
@@ -517,7 +519,7 @@ select {
           }
       };
 
-      /*document.getElementById("send").onclick = function(evt) {
+      document.getElementById("send").onclick = function(evt) {
           if (!conn) {
             return false;
           }
@@ -559,7 +561,7 @@ select {
           conn.send(jsonString);
 
           return false;
-      };*/
+      };
 
       document.getElementById("rg_game_bt").onclick = function(evt) {
         console.log("randombutton");
@@ -590,7 +592,9 @@ select {
           obj.state = 1; // ready
           $('#rg_game_bt').text("Selecting...");
           $('#rg_img').attr("src","images/icon_rg_selecting.png");
-          console.log("here");
+          $('#rg_game_bt').attr("disabled",true);
+          $(".randombutton").css("background-color", "#a5e5df");
+   
           readTextFile("cups.json", function(text){
             var data = JSON.parse(text);
             console.log(data);
@@ -603,14 +607,9 @@ select {
           setTimeout(function() {
             $('#rg_game_bt').text("Ready");
             $('#rg_img').attr("src","images/icon_rg_done.png");
-            readTextFile("cups.json", function(text){
-              var data = JSON.parse(text);
-              console.log(data);
-              console.log("length :" + data.Lists.length);
-              // select random cup to send
-              var jsonString = JSON.stringify(obj);
-              conn.send(jsonString);
-            });
+            $('#rg_game_bt').attr("disabled",false);
+            $(".randombutton").css("background-color", "#2EAFA3");
+            
           }, 5000);
         }
       };
@@ -644,6 +643,9 @@ select {
           obj.state = 1 // ready
           $('#lg_game_bt').text("Selecting...");
           $('#lg_img').attr("src","images/icon_lg_selecting.png");
+          $('#lg_game_bt').attr("disabled",true);
+          $(".lovebutton").css("background-color", "#f7b7d1");
+
           readTextFile("cups.json", function(text){
             var data = JSON.parse(text);
             console.log(data);
@@ -655,45 +657,14 @@ select {
 
           setTimeout(function() {
             $('#lg_game_bt').text("Ready");
-            $('#ㅣg_img').attr("src","images/icon_lg_done.png");
-            readTextFile("cups.json", function(text){
-              var data = JSON.parse(text);
-              console.log(data);
-              console.log("length :" + data.Lists.length);
-              // select random cup to send
-              var jsonString = JSON.stringify(obj);
-              conn.send(jsonString);
-            });
+            $('#lg_img').attr("src","images/icon_lg_done.png");
+            $('#lg_game_bt').attr("disabled",false);
+            $(".lovebutton").css("background-color", "#C11F61");
+            
           }, 5000);
 
         }
       };
-
-
-      /*document.getElementById("game").onclick = function(evt) {
-          console.log("game button pressed");
-            var name = $('#game').text();
-            console.log(name);
-            var obj = new Object();
-            obj.cmd = "gamesetting";
-            clickedGame = $(".colors .active-color");
-            console.log(clickedGame.index());
-
-            obj.kind = clickedGame.index()
-            if (name == "START") {
-              // send the cup to drink
-              obj.state = 1 // atart
-              readTextFile("cups.json", function(text){
-                  var data = JSON.parse(text);
-                  console.log(data);
-                  console.log("length :" + data.Lists.length);
-                  // select random cup to send
-                  var jsonString = JSON.stringify(obj);
-                  conn.send(jsonString);
-                  $('#random').text("Random");
-              });
-            } 
-        };*/
     })
   </script>
 </body>

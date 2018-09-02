@@ -200,7 +200,7 @@ func start(w http.ResponseWriter, r *http.Request) {
             send.Cmd = "gamesetting"
             length := len(deviceList)
             log.Printf("count [%d]", length)
-            send.Kind = data.Kind + 1
+            send.Kind = data.Kind 
             log.Printf("kind [%d]", send.Kind)
             if data.GameState == 0 {  // by image button
                 // game ready
@@ -225,14 +225,44 @@ func start(w http.ResponseWriter, r *http.Request) {
                 // 5 second later
                 time.Sleep(time.Second * 5)
                 send.GameState = 2
-                for _, dev := range deviceList {
-                    randomNum := rand.Intn(length+1)
-                    
+                if send.Kind == 1 { // random game
+                    randomNum := rand.Intn(length+1) % (length+1)
                     log.Printf("drink[%d]", randomNum)
-                    send.Drink = randomNum
-                    ws := dev.WS
-                    if err = ws.WriteJSON(send); err != nil {
-                        log.Println(err)
+                    for i, dev := range deviceList {
+                        if i == randomNum {
+                            send.Drink = 1
+                        } else {
+                            send.Drink = 0
+                        }
+                        ws := dev.WS
+                        if err = ws.WriteJSON(send); err != nil {
+                            log.Println(err)
+                        }
+                    }
+                } else if send.Kind == 2 { //lovehot game
+                    // love shot game has to be started if players are 2 and more
+                    var loveShotA, loveShotB int
+                    if length >= 2 {
+                        loveShotA = rand.Intn(length) % (length)
+                        loveShotB = rand.Intn(length) % (length-1)
+                        if loveShotB >= loveShotA {
+                            loveShotB += 1
+                        }
+                        log.Printf("A[%d], B[%d]", loveShotA, loveShotB)
+                    } else {
+                        log.Printf("Not enough to run loveshot game user is [%d]", length)
+                    }
+
+                    for i, dev := range deviceList {
+                        if i == loveShotA || i == loveShotB {
+                            send.Drink = 1
+                        } else {
+                            send.Drink = 0
+                        }
+                        ws := dev.WS
+                        if err = ws.WriteJSON(send); err != nil {
+                            log.Println(err)
+                        }
                     }
                 }
             }
