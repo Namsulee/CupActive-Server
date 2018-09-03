@@ -56,7 +56,7 @@ footer {
 
 .tabs {
   line-height: 30px;
-  border:1px solid #494949;
+  border:1px solid #FFFFFF;
   vertical-align:middle;
   display: table;
   table-layout: fixed;
@@ -67,7 +67,7 @@ footer {
 .tabs > li {
   transition-duration: .25s;
   display: table-cell;
-  border:1px solid #494949;
+  border:1px solid #FFFFFF;
   border-collapse : collapse;
   list-style: none;
   text-align: center;
@@ -111,7 +111,7 @@ footer {
   background-color: white;
   position: relative;
   width: 100%;
-  border:2px solid #444444;
+  border:2px solid #FFFFFF;
 }
 .tab__content > li {
   width: 100%;
@@ -239,7 +239,7 @@ select {
   border:0;
   border-radius:10px;
   color:white;
-  padding:10px 35px; 
+  padding:10px 30px; 
   position:relative;
   font-size:20px;
   text-align:relative;
@@ -288,7 +288,7 @@ select {
                   <img id=rg_img src="images/icon_rg_nor.png" />
                 </div>
                 <div>
-                  <button class="randombutton" id="rg_game_bt">Ready</button>
+                  <button class="randombutton" id="rg_game_bt">READY</button>
                 </div>
             </div>
         </li>
@@ -301,7 +301,7 @@ select {
                   <img id=lg_img src="images/icon_lg_nor.png" />
                 </div>
                 <div>
-                  <button class="lovebutton" id="lg_game_bt">Ready</button>
+                  <button class="lovebutton" id="lg_game_bt">READY</button>
                 </div>
             </div>
         </li>        
@@ -310,8 +310,8 @@ select {
                 <div class="cups">
                 </div>
                 <div>
-                  <button class="settingbutton" id="send">SETTING</button>
-                  <button class="settingbutton" id="restart">RESTART</button>
+                  <button class="settingbutton" id="send">REGISTER</button>
+                  <button class="settingbutton" id="restart">RESET</button>
                 </div>
             </div>
         </li>
@@ -576,9 +576,9 @@ select {
         clickedGame = $(".colors .active-color");
         obj.kind = 1; //random game
         
-        if (name == "Ready") {
+        if (name == "READY") {
           obj.state = 0; // ready
-          $('#rg_game_bt').text("Start");
+          $('#rg_game_bt').text("START");
           $('#rg_img').attr("src","images/icon_rg_ready.png");
           readTextFile("cups.json", function(text){
             var data = JSON.parse(text);
@@ -588,10 +588,10 @@ select {
             var jsonString = JSON.stringify(obj);
             conn.send(jsonString);
           });
-        } else if (name == "Start") {
+        } else if (name == "START") {
           obj.state = 1; // ready
           $('#rg_game_bt').text("Selecting...");
-          $('#rg_img').attr("src","images/icon_rg_selecting.png");
+          $('#rg_img').attr("src","images/icon_rg_done.png");
           $('#rg_game_bt').attr("disabled",true);
           $(".randombutton").css("background-color", "#a5e5df");
    
@@ -605,8 +605,8 @@ select {
           });
   
           setTimeout(function() {
-            $('#rg_game_bt').text("Ready");
-            $('#rg_img').attr("src","images/icon_rg_done.png");
+            $('#rg_game_bt').text("READY");
+            $('#rg_img').attr("src","images/icon_rg_nor.png");
             $('#rg_game_bt').attr("disabled",false);
             $(".randombutton").css("background-color", "#2EAFA3");
             
@@ -627,9 +627,9 @@ select {
         clickedGame = $(".colors .active-color");
         obj.kind = 2; //loveshot game
         
-        if (name == "Ready") {
+        if (name == "READY") {
           obj.state = 0 // ready
-          $('#lg_game_bt').text("Start");
+          $('#lg_game_bt').text("START");
           $('#lg_img').attr("src","images/icon_lg_ready.png");
           readTextFile("cups.json", function(text){
             var data = JSON.parse(text);
@@ -639,10 +639,10 @@ select {
             var jsonString = JSON.stringify(obj);
             conn.send(jsonString);
           });
-        } else if (name == "Start") {
+        } else if (name == "START") {
           obj.state = 1 // ready
           $('#lg_game_bt').text("Selecting...");
-          $('#lg_img').attr("src","images/icon_lg_selecting.png");
+          $('#lg_img').attr("src","images/icon_lg_done.png");
           $('#lg_game_bt').attr("disabled",true);
           $(".lovebutton").css("background-color", "#f7b7d1");
 
@@ -656,8 +656,8 @@ select {
           });
 
           setTimeout(function() {
-            $('#lg_game_bt').text("Ready");
-            $('#lg_img').attr("src","images/icon_lg_done.png");
+            $('#lg_game_bt').text("READY");
+            $('#lg_img').attr("src","images/icon_lg_nor.png");
             $('#lg_game_bt').attr("disabled",false);
             $(".lovebutton").css("background-color", "#C11F61");
             
