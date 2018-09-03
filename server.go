@@ -254,8 +254,12 @@ func start(w http.ResponseWriter, r *http.Request) {
                     }
 
                     for i, dev := range deviceList {
-                        if i == loveShotA || i == loveShotB {
-                            send.Drink = 1
+                        if length >= 2 {
+                            if i == loveShotA || i == loveShotB {
+                                send.Drink = 1
+                            } else {
+                                send.Drink = 0
+                            }
                         } else {
                             send.Drink = 0
                         }
