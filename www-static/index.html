@@ -5,6 +5,7 @@
   <title>SoolSang Web UI</title>
  
 <style >
+@import("/Users/namsulee/source/CupActive-Server/www-static/noto-sans-korean-webfont/css/noto-sans-korean.css");
 * {
   box-sizing: border-box;
   padding: 0;
@@ -12,32 +13,29 @@
 }
 
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Noto Sans Korean", sans-serif;
+  font-weight: 300;
   color: #494949;
-  padding: 100px 20px;
-  font-size: 25px;
+  padding: 100px 0px;
   vertical-align:center;
 }
 
+
 nav {
   z-index: 9;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 25px;
   color: white;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 20px 0;
+  padding: 10px 0px;
   text-align: center;
+
 }
 
 .bg-color {
   background-color: #1780E0;
-  transition-duration: .5s;
-}
-
-.text-color {
-  color: #494949;
   transition-duration: .5s;
 }
 
@@ -46,58 +44,52 @@ footer {
   text-align: center;
   opacity: .77;
   color: white;
+  font-size:15px;
+  font-weight:400;
 }
 
 .wrapper {
-  min-width: 600px;
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 10px auto;
 }
 
 .tabs {
-  line-height: 30px;
-  border:1px solid #FFFFFF;
+  font-size: 20px;
+  line-height: 25px;
+  background-color: #FFFFFF;
   vertical-align:middle;
   display: table;
+
   table-layout: fixed;
   width: 100%;
   -webkit-transform: translateY(5px);
   transform: translateY(5px);
+  text-align:center;
+
 }
+
 .tabs > li {
   transition-duration: .25s;
   display: table-cell;
-  border:1px solid #FFFFFF;
-  border-collapse : collapse;
   list-style: none;
   text-align: center;
   vertical-align:middle;
-  padding: 10px 20px 15px 20px;
+  padding: 30px 40px 10px 40px;
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  color: white;
+  color: black;
   white-space: nowrap;
 }
-.tabs > li:before {
-  z-index: -1;
-  position: absolute;
-  content: "";
-  width: 100%;
-  height: 120%;
-  top: 0;
-  left: 0;
-  background-color: rgba(255, 255, 255, 0.3);
-  -webkit-transform: translateY(100%);
-  transform: translateY(100%);
-  transition-duration: .25s;
-}
-.tabs > li:hover:before {
-  -webkit-transform: translateY(70%);
-  transform: translateY(70%);
-}
+
 .tabs > li.active {
   color: #494949;
+  content:"";
+  font-weight: 900;
+  display:block;
+  margin: 20px 0px;
+  border-bottom: 2px solid #1780E0;
+  
 }
 
 .tabs > li.active:before {
@@ -111,7 +103,6 @@ footer {
   background-color: white;
   position: relative;
   width: 100%;
-  border:2px solid #FFFFFF;
 }
 .tab__content > li {
   width: 100%;
@@ -124,9 +115,9 @@ footer {
 .tab__content > li .content__wrapper {
   text-align: center;
   width: 100%;
-  height:350px;
   padding:40px 40px;
   background-color: white;
+  display:relative;
 }
 
 .attend h2 {
@@ -134,6 +125,7 @@ footer {
   margin:0 auto;
   text-align: center;
   font-weight: 300;
+  font-size:25px;
   position:relative;
   padding-bottom:20px;
 }
@@ -147,13 +139,13 @@ footer {
 .randombutton {
   background: #2EAFA3;
   border:0;
-  border-radius:10px;
+  border-radius:30px;
   color:white;
   text-align: center;
   position:relative;
   font-size:20px;
-  margin:0 auto;
-  padding:10px 100px;
+  width:200px;
+  height:55px;
 }
 
 .randombutton:active {
@@ -163,13 +155,14 @@ footer {
 .lovebutton {
   background: #C11F61;
   border:0;
-  border-radius:10px;
+  border-radius:30px;
   color:white;
   text-align: center;
   position:relative;
   font-size:20px;
-  margin:0 auto;
-  padding:10px 100px;
+  margin:15px auto;
+  width:200px;
+  height:55px;
 }
 
 .lovebutton:active {
@@ -190,64 +183,70 @@ footer {
   font-size:0.6em;
 }
 
-.mytable table {
-  width: 100%;
-  border: 1px solid #444444;
+.jb-th-1 {
+    width: 200px;
+}
+.jb-th-2 {
+    width: 200px;
+}
+.jb-th-3 {
+    width: 500px;
+}
+.mytable {
+  margin-left: auto; 
+  margin-right: auto;
   border-collapse: collapse;
+  border: 1px solid #e2e2e2;
+
 }
 
 .mytable th {
-    width: 5%;
-    background-color: #1780E0;
-    color:#FFFFFF;
+  font-size:19px;
+  font-weight:300;
+  background-color: #e2e2e2;
+  color:#1780E0;
+  padding:15px;
+  margin-left: auto; margin-right: auto;
+  border:1px #e2e2e2;
 }
-
-.mytable,.mytable th,.mytable td {
-  font-size:0.95em;
+.mytable td {
+  font-size:18px;
   text-align:center;
-  padding:4px;
-  border-collapse:collapse;
+  color:#494949;
+  padding:10px;
   margin-bottom:20px;
+  border: 1px solid #e2e2e2;
 }
 
-.mytable th,.mytable td {
-  border: 1px solid #1B94EF;
-  border-width: 1px 0 1px 0
-  margin:10px;
-}
-.mytable tr {
-  border: 1px solid #1B94EF;
-  color: #494949
-}
-.mytable tr:nth-child(odd) {
-  background-color:#fdfdfd;
-}
-.mytable tr:nth-child(even) {
-  background-color:#b4e0fe;
-}
 select {
   width:100px;
   height:30px;
   padding-left:10px;
   font-size:18px;
   color:#494949;
-  border:1px solid #006fff;
+  border:1px solid #1780E0;
   border-radius:3px;
 }
 .settingbutton {
   background: #1780E0;
   border:0;
-  border-radius:10px;
+  width:200px;
+  height:55px;
+  border-radius:30px;
   color:white;
-  padding:10px 30px; 
+  
   position:relative;
   font-size:20px;
+  font-weight:100;
   text-align:relative;
   text-align: center;
   text-decoration:none;
   display:inline-block;
-  font-size:20px;
+  font-size:18px;
   outline:none;
+  margin-top:50px;
+  margin-left:50px;
+  margin-right:50px;
 }
 
 .settingbutton:active {
@@ -268,24 +267,22 @@ select {
 
 </head>
 <body translate="no" >
-
-  <nav class="bg-color"></br>Joyful SoolSang</nav>
-
+<nav class="bg-color"></br>JOYFUL SOOLSANG</nav>
 <section class="wrapper">
     <ul class="tabs">
-        <li><p>Random</p><p>Game</p></li>
-        <li><p>Love Shot</p><p>Game</p></li>
-        <li class="active"><p>Settings</p></li>
+        <li><p>RANDOM GAME</li>
+        <li><p>LOVE SHOT GAME</li>
+        <li class="active"><p>SETTINGS</p></li>
     </ul>
 
     <ul class="tab__content">
         <li>
             <div class="content__wrapper">
-                <div class="attend">
-                  <h2 id=rg_text>XX 명 게임 참여 중</h2>
-                </div>
                 <div class="gameicon">
                   <img id=rg_img src="images/icon_rg_nor.png" />
+                </div>
+                <div class="attend">
+                  <h2 id=rg_text>XX 명 게임 참여 중</h2>
                 </div>
                 <div>
                   <button class="randombutton" id="rg_game_bt">READY</button>
@@ -294,11 +291,11 @@ select {
         </li>
         <li>
             <div class="content__wrapper">
-                <div class="attend">
-                  <h2 id=lg_text>XX 명 게임 참여 중</h2>
-                </div>
                 <div class="gameicon">
                   <img id=lg_img src="images/icon_lg_nor.png" />
+                </div>
+                <div class="attend">
+                  <h2 id=lg_text>XX 명 게임 참여 중</h2>
                 </div>
                 <div>
                   <button class="lovebutton" id="lg_game_bt">READY</button>
@@ -311,37 +308,33 @@ select {
                 </div>
                 <div>
                   <button class="settingbutton" id="send">REGISTER</button>
-                  <button class="settingbutton" id="restart">RESET</button>
+                  <button class="settingbutton" id="restart">RESET ALL</button>
                 </div>
             </div>
         </li>
         
     </ul>
-    <footer class="footer">Created by Sooldongmoo</footer>
+    <footer class="footer">Created by SOOLDONGMOO</footer>
 </section>
   <script src="./codepen.js"></script>
   <script src='./jquery-3.3.1.min.js'></script>
   <script>
+    reload();
     $(document).ready(function () {
         // Variables
         var clickedTab = $(".tabs > .active");
         var tabWrapper = $(".tab__content");
         var activeTab = tabWrapper.find(".active");
-        var activeTabHeight = activeTab.outerHeight();
         // Show tab on page load
-        activeTab.show();
-        reload();
-
+        var activeTabHeight = activeTab.outerHeight();
         // Set height of wrapper on page load
         tabWrapper.height(activeTabHeight);
+        activeTab.show();
 
         $(".tabs > li").on("click", function () {
-
             // Remove class from active tab
             $(".tabs > li").removeClass("active");
             $(".colors > li").removeClass("active-color");
-            
-            
             $(".bg-color").css("background-color", "#1780E0");
 
             // Add class active to clicked tab
@@ -381,6 +374,7 @@ select {
                   $(".bg-color").css("background-color", "#2EAFA3");
                   $(".gamebutton").css("background", "#2EAFA3");
                   $('#rg_img').attr("src","images/icon_rg_nor.png");
+                  $(".tabs > .active").css("border-bottom-color", "#2EAFA3");
 
                 } else if (clickedTabIndex == 1) { // love shot game
                   console.log("lovshot");
@@ -388,26 +382,15 @@ select {
                   $(".bg-color").css("background-color", "#C11F61");
                   $(".gamebutton").css("background", "#C11F61");
                   $('#lg_img').attr("src","images/icon_lg_nor.png");
+                  $(".tabs > .active").css("border-bottom-color", "#C11F61");
                 } else if (clickedTabIndex == 2) { // setting
                   console.log("setting");
+
+                  $(".tabs > .active").css("border-bottom-color", "#1780E0");
                   reload();
                 }
 
             });
-        });
-
-        // Variables
-        var colorButton = $(".colors li");
-        colorButton.on("click", function () {
-          // Remove class from currently active button
-          $(".colors > li").removeClass("active-color");
-          // Add class active to clicked button
-          $(this).addClass("active-color");
-          // Get background color of clicked
-          var newColor = $(this).attr("data-color");
-          // Change background of everything with class .bg-color
-          $(".bg-color").css("background-color", newColor);
-          // Change color of everything with class .text-color
         });
     });
     
@@ -483,17 +466,17 @@ select {
 
       console.log("reload cup lists~~~");
 
-      outstring = "<div class=cups><table class=mytable><thead><tr>";
-      outstring += "<tr><th>ID</th><th>IP</th><th>How much can you drink?</th></thead><tbody>"
+      outstring = "<div class=cups><table class=mytable>";
+      outstring += "<tr><th class=jb-th-1>ID</th><th class=jb-th-2>IP</th><th class=jb-th-3>How much can you drink?</th>"
 
       for (j in jsonobj.Lists) {
           outstring += "<tr>";
-          outstring += "<td>" + jsonobj.Lists[j].Name + "</td>";
+          outstring += "<td style='color:#1780E0'>" + jsonobj.Lists[j].Name + "</td>";
           outstring += "<td>" + jsonobj.Lists[j].IPAddress + "</td>";
           outstring += "<td><select name='number' id=number" + j + "><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></td>";
           outstring += "</tr>"
       }
-      outstring += "</tbody></table></div>"
+      outstring += "</table></div>"
  
       $('.cups').html(outstring);
     }
@@ -590,11 +573,13 @@ select {
           });
         } else if (name == "START") {
           obj.state = 1; // ready
-          $('#rg_game_bt').text("Selecting...");
+          $('#rg_game_bt').text("SELETING...");
+          $('#rg_game_bt').css("color", "#2EAFA3");
+          
           $('#rg_img').attr("src","images/icon_rg_done.png");
           $('#rg_game_bt').attr("disabled",true);
-          $(".randombutton").css("background-color", "#a5e5df");
-   
+          $(".randombutton").css("background-color", "rgba( 255, 255, 255, 0.5 )");
+        
           readTextFile("cups.json", function(text){
             var data = JSON.parse(text);
             console.log(data);
@@ -609,6 +594,7 @@ select {
             $('#rg_img').attr("src","images/icon_rg_nor.png");
             $('#rg_game_bt').attr("disabled",false);
             $(".randombutton").css("background-color", "#2EAFA3");
+            $('#rg_game_bt').css("color", "#FFFFFF");
             
           }, 5000);
         }
@@ -641,11 +627,11 @@ select {
           });
         } else if (name == "START") {
           obj.state = 1 // ready
-          $('#lg_game_bt').text("Selecting...");
+          $('#lg_game_bt').text("SELECTING...");
           $('#lg_img').attr("src","images/icon_lg_done.png");
           $('#lg_game_bt').attr("disabled",true);
-          $(".lovebutton").css("background-color", "#f7b7d1");
-
+          $(".lovebutton").css("background-color", "rgba( 255, 255, 255, 0.5 )");
+          $('#lg_game_bt').css("color", "#C11F61");
           readTextFile("cups.json", function(text){
             var data = JSON.parse(text);
             console.log(data);
@@ -660,6 +646,7 @@ select {
             $('#lg_img').attr("src","images/icon_lg_nor.png");
             $('#lg_game_bt').attr("disabled",false);
             $(".lovebutton").css("background-color", "#C11F61");
+            $('#lg_game_bt').css("color", "#FFFFFF");
             
           }, 5000);
 
