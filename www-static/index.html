@@ -5,7 +5,7 @@
   <title>SoolSang Web UI</title>
  
 <style >
-@import("/Users/namsulee/source/CupActive-Server/www-static/noto-sans-korean-webfont/css/noto-sans-korean.css");
+@import("./www-static/noto-sans-korean-webfont/css/noto-sans-korean.css");
 * {
   box-sizing: border-box;
   padding: 0;
@@ -187,17 +187,16 @@ footer {
     width: 200px;
 }
 .jb-th-2 {
-    width: 200px;
+    width: 300px;
 }
 .jb-th-3 {
-    width: 500px;
+    width: 400px;
 }
 .mytable {
   margin-left: auto; 
   margin-right: auto;
   border-collapse: collapse;
-  border: 1px solid #e2e2e2;
-
+  border: 3px solid #e2e2e2;
 }
 
 .mytable th {
@@ -207,7 +206,7 @@ footer {
   color:#1780E0;
   padding:15px;
   margin-left: auto; margin-right: auto;
-  border:1px #e2e2e2;
+  border:3px #e2e2e2;
 }
 .mytable td {
   font-size:18px;
@@ -215,7 +214,7 @@ footer {
   color:#494949;
   padding:10px;
   margin-bottom:20px;
-  border: 1px solid #e2e2e2;
+  border: 3px solid #e2e2e2;
 }
 
 select {
@@ -266,7 +265,7 @@ select {
 
 
 </head>
-<body translate="no" >
+<body>
 <nav class="bg-color"></br>JOYFUL SOOLSANG</nav>
 <section class="wrapper">
     <ul class="tabs">
@@ -303,8 +302,8 @@ select {
             </div>
         </li>        
         <li class="active">
-            <div class="content__wrapper">
-                <div class="cups">
+            <div class="content__wrapper" >
+                <div class="cups" onLoad="pagestart()">
                 </div>
                 <div>
                   <button class="settingbutton" id="send">REGISTER</button>
@@ -320,6 +319,19 @@ select {
   <script src='./jquery-3.3.1.min.js'></script>
   <script>
     reload();
+
+    function autoRefresh_sample_div()
+    {
+      clickedTab = $(".tabs .active");
+      var clickedTabIndex = clickedTab.index();
+      if (clickedTabIndex == 2) {
+      var currentLocation = window.location;
+        console.log("setting");
+        $(".tabs > .active").css("border-bottom-color", "#1780E0");
+        reload();
+      }
+    }
+    setInterval('autoRefresh_sample_div()', 5000); 
     $(document).ready(function () {
         // Variables
         var clickedTab = $(".tabs > .active");
@@ -473,7 +485,7 @@ select {
           outstring += "<tr>";
           outstring += "<td style='color:#1780E0'>" + jsonobj.Lists[j].Name + "</td>";
           outstring += "<td>" + jsonobj.Lists[j].IPAddress + "</td>";
-          outstring += "<td><select name='number' id=number" + j + "><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></td>";
+          outstring += "<td><select name='number' id=number" + j + "><option>1</option><option>2</option><option>3</option><option>4</option><option selected='selected'>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></td>";
           outstring += "</tr>"
       }
       outstring += "</table></div>"
@@ -574,6 +586,7 @@ select {
         } else if (name == "START") {
           obj.state = 1; // ready
           $('#rg_game_bt').text("SELETING...");
+          $('#rg_game_bt').css("font-size", 30);
           $('#rg_game_bt').css("color", "#2EAFA3");
           
           $('#rg_img').attr("src","images/icon_rg_done.png");
@@ -595,6 +608,7 @@ select {
             $('#rg_game_bt').attr("disabled",false);
             $(".randombutton").css("background-color", "#2EAFA3");
             $('#rg_game_bt').css("color", "#FFFFFF");
+            $('#rg_game_bt').css("font-size", 20);
             
           }, 5000);
         }
@@ -628,6 +642,7 @@ select {
         } else if (name == "START") {
           obj.state = 1 // ready
           $('#lg_game_bt').text("SELECTING...");
+          $('#lg_game_bt').css("font-size", 30);
           $('#lg_img').attr("src","images/icon_lg_done.png");
           $('#lg_game_bt').attr("disabled",true);
           $(".lovebutton").css("background-color", "rgba( 255, 255, 255, 0.5 )");
@@ -647,6 +662,7 @@ select {
             $('#lg_game_bt').attr("disabled",false);
             $(".lovebutton").css("background-color", "#C11F61");
             $('#lg_game_bt').css("color", "#FFFFFF");
+            $('#lg_game_bt').css("font-size", 20);
             
           }, 5000);
 

@@ -122,6 +122,199 @@ func wsRegister(c *websocket.Conn, message []byte) error {
 func random(min, max int) int {
     return rand.Intn(max - min) + min
 }
+func closeWS(c *websocket.Conn) {
+    log.Printf("call close websocket")
+    for i, cup := range deviceList {
+        if cup.WS == c {
+            log.Printf("find same index [%d]", i)
+            deviceList = append(deviceList[:i], deviceList[i+1:]...)
+            break
+        }
+    }
+    // write cup list in json file
+    writeCupsInfo()
+
+    c.Close()
+}
+
+func readPump(c *websocket.Conn, recvCh chan []byte) {
+    defer func() {
+        log.Printf("finish read pump")
+        c.Close()
+    }()
+
+    for {
+            _, msg, err := c.ReadMessage()
+        if err != nil {
+            log.Println("read:", err)
+            break
+        }
+        log.Printf("recv: %s", msg)
+
+        rcv := Command{}
+        json.Unmarshal([]byte(msg), &rcv)
+        log.Printf("cmd : [%s]", rcv.Cmd)
+        switch rcv.Cmd {
+            case "register":
+                err := wsRegister(c, msg)
+                if err == nil {
+                    recvCh <- msg
+                }
+            default:
+                recvCh <- msg
+        }
+    }
+}
+
+func writePump(c *websocket.Conn, recvCh chan []byte) {
+    var err error
+    defer func() {
+        log.Printf("finish write pump")
+        c.Close()
+    }()
+    for {
+        select {
+        case msg, ok := <-recvCh:
+            if !ok {
+                // The hub closed the channel.
+                c.WriteMessage(websocket.CloseMessage, []byte{})
+                return
+            }
+            rcv := Command{}
+            json.Unmarshal([]byte(msg), &rcv)
+            log.Printf("cmd : [%s]", rcv.Cmd)
+            switch rcv.Cmd {
+                case "register":
+                    log.Printf("command register")
+
+                    send := Command{}
+                    send.Cmd = "connected"
+                    if err = c.WriteJSON(send); err != nil {
+                        log.Println(err)
+                    }
+                case "usersetting":
+                    log.Printf("command usersetting")
+
+                    data := UserSetting{}
+                    json.Unmarshal([]byte(msg), &data)
+                    info := data.Cap
+
+                    for i, cup := range info {
+                        log.Printf("capability[%d] [%d]", i,  cup)
+                    }
+
+                    for i, dev := range deviceList {
+                        dev.Capability = data.Cap[i]
+
+                        send := UserSettingReq{}
+                        send.Cmd = "usersetting"
+                        send.UniqueID = dev.UniqueID 
+                        send.Capability = dev.Capability
+                        ws := dev.WS
+                       
+                        if err = ws.WriteJSON(send); err != nil {
+                            log.Println(err)
+                        }
+                        
+                    }
+                case "restart":
+                    log.Printf("command restart")
+
+                    send := Command{}
+                    send.Cmd = "restart"
+
+                    for _, dev := range deviceList {
+                        ws := dev.WS
+                        if err = ws.WriteJSON(send); err != nil {
+                            log.Println(err)
+                        }
+                    }
+                case "gamesetting":
+                    log.Printf("command gamesetting")
+
+                    data := Message{}
+                    json.Unmarshal([]byte(msg), &data)
+
+                    send := GameSettingReq{}
+                    send.Cmd = "gamesetting"
+                    length := len(deviceList)
+                    log.Printf("count [%d]", length)
+                    send.Kind = data.Kind 
+                    log.Printf("kind [%d]", send.Kind)
+                    if data.GameState == 0 {  // by image button
+                        // game ready
+                        log.Printf("ready state")
+                        send.GameState = 0
+                        for _, dev := range deviceList {
+                            log.Printf("here")
+                            ws := dev.WS
+                            if err = ws.WriteJSON(send); err != nil {
+                                log.Println(err)
+                            }
+                        }
+                    } else if data.GameState == 1 { // by start button
+                        log.Printf("start state")
+                        send.GameState = 1
+                        for _, dev := range deviceList {
+                            ws := dev.WS
+                            if err = ws.WriteJSON(send); err != nil {
+                                log.Println(err)
+                            }
+                        }
+                        // 5 second later
+                        time.Sleep(time.Second * 5)
+                        send.GameState = 2
+                        if send.Kind == 1 { // random game
+                            randomNum := rand.Intn(length) % (length)
+                            log.Printf("drink[%d]", randomNum)
+                            for i, dev := range deviceList {
+                                if i == randomNum {
+                                    send.Drink = 1
+                                } else {
+                                    send.Drink = 0
+                                }
+                                ws := dev.WS
+                                if err = ws.WriteJSON(send); err != nil {
+                                    log.Println(err)
+                                }
+                            }
+                        } else if send.Kind == 2 { //lovehot game
+                            // love shot game has to be started if players are 2 and more
+                            var loveShotA, loveShotB int
+                            if length >= 2 {
+                                loveShotA = rand.Intn(length) % (length)
+                                loveShotB = rand.Intn(length) % (length-1)
+                                if loveShotB >= loveShotA {
+                                    loveShotB += 1
+                                }
+                                log.Printf("A[%d], B[%d]", loveShotA, loveShotB)
+                            } else {
+                                log.Printf("Not enough to run loveshot game user is [%d]", length)
+                            }
+
+                            for i, dev := range deviceList {
+                                if length >= 2 {
+                                    if i == loveShotA || i == loveShotB {
+                                        send.Drink = 1
+                                    } else {
+                                        send.Drink = 0
+                                    }
+                                } else {
+                                    send.Drink = 0
+                                }
+                                ws := dev.WS
+                                if err = ws.WriteJSON(send); err != nil {
+                                    log.Println(err)
+                                }
+                            }
+                        }
+                    }
+                default:
+                    log.Printf("Not support command {%s}", rcv.Cmd)
+            }
+        }
+    }
+}
 
 func start(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -129,158 +322,15 @@ func start(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
-	defer c.Close()
-
-	for {
-	_, msg, err := c.ReadMessage()
-	if err != nil {
-	    log.Println("read:", err)
-	    break
-	}
-	log.Printf("recv: %s", msg)
-
-	rcv := Command{}
-	json.Unmarshal([]byte(msg), &rcv)
-	log.Printf("cmd : [%s]", rcv.Cmd)
-
-	switch rcv.Cmd {
-	   case "register":
-	    log.Printf("command register device")
-            err := wsRegister(c, msg)
-            if err == nil {
-                // Confirm message to register
-                send := Command{}
-                send.Cmd = "connected"
-
-                if err = c.WriteJSON(send); err != nil {
-                    log.Println(err)
-                }
-            }
-        case "usersetting":
-            log.Printf("command usersetting")
-            data := UserSetting{}
-            json.Unmarshal([]byte(msg), &data)
-            info := data.Cap
-
-            for i, cup := range info {
-                log.Printf("capability[%d] [%d]", i,  cup)
-            }
-
-            for i, dev := range deviceList {
-                dev.Capability = data.Cap[i]
-
-                send := UserSettingReq{}
-                send.Cmd = "usersetting"
-                send.UniqueID = dev.UniqueID 
-                send.Capability = dev.Capability
-                ws := dev.WS
-               
-                if err = ws.WriteJSON(send); err != nil {
-                    log.Println(err)
-                }
-                
-            }
-        case "restart":
-            log.Printf("command restart")
-            send := Command{}
-            send.Cmd = "restart"
-
-            for _, dev := range deviceList {
-                ws := dev.WS
-                if err = ws.WriteJSON(send); err != nil {
-                    log.Println(err)
-                }
-            }
-        case "gamesetting":
-            log.Printf("command gamesetting")
-            data := Message{}
-            json.Unmarshal([]byte(msg), &data)
-
-            send := GameSettingReq{}
-            send.Cmd = "gamesetting"
-            length := len(deviceList)
-            log.Printf("count [%d]", length)
-            send.Kind = data.Kind 
-            log.Printf("kind [%d]", send.Kind)
-            if data.GameState == 0 {  // by image button
-                // game ready
-                log.Printf("ready state")
-                send.GameState = 0
-                for _, dev := range deviceList {
-                    log.Printf("here")
-                    ws := dev.WS
-                    if err = ws.WriteJSON(send); err != nil {
-                        log.Println(err)
-                    }
-                }
-            } else if data.GameState == 1 { // by start button
-                log.Printf("start state")
-                send.GameState = 1
-                for _, dev := range deviceList {
-                    ws := dev.WS
-                    if err = ws.WriteJSON(send); err != nil {
-                        log.Println(err)
-                    }
-                }
-                // 5 second later
-                time.Sleep(time.Second * 5)
-                send.GameState = 2
-                if send.Kind == 1 { // random game
-                    randomNum := rand.Intn(length+1) % (length+1)
-                    log.Printf("drink[%d]", randomNum)
-                    for i, dev := range deviceList {
-                        if i == randomNum {
-                            send.Drink = 1
-                        } else {
-                            send.Drink = 0
-                        }
-                        ws := dev.WS
-                        if err = ws.WriteJSON(send); err != nil {
-                            log.Println(err)
-                        }
-                    }
-                } else if send.Kind == 2 { //lovehot game
-                    // love shot game has to be started if players are 2 and more
-                    var loveShotA, loveShotB int
-                    if length >= 2 {
-                        loveShotA = rand.Intn(length) % (length)
-                        loveShotB = rand.Intn(length) % (length-1)
-                        if loveShotB >= loveShotA {
-                            loveShotB += 1
-                        }
-                        log.Printf("A[%d], B[%d]", loveShotA, loveShotB)
-                    } else {
-                        log.Printf("Not enough to run loveshot game user is [%d]", length)
-                    }
-
-                    for i, dev := range deviceList {
-                        if length >= 2 {
-                            if i == loveShotA || i == loveShotB {
-                                send.Drink = 1
-                            } else {
-                                send.Drink = 0
-                            }
-                        } else {
-                            send.Drink = 0
-                        }
-                        ws := dev.WS
-                        if err = ws.WriteJSON(send); err != nil {
-                            log.Println(err)
-                        }
-                    }
-                }
-            }
-        default:
-            log.Printf("Not support command {%s}", rcv.Cmd)
-        }
-    }
+    recvCh := make(chan []byte)
+    go readPump(c, recvCh)
+    go writePump(c, recvCh)
 }
 
 // Add http response headers to a response to disable caching
 func addNoCacheHeaders(handler http.Handler) http.HandlerFunc {
 
     return func(writer http.ResponseWriter, request *http.Request) {
-
         writer.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
         writer.Header().Add("Pragma", "no-cache")
         writer.Header().Add("Expires", "0")
@@ -294,8 +344,8 @@ func main() {
 	log.SetFlags(0)
 
     router := http.NewServeMux()
-
     router.HandleFunc("/ws", start)
+
     router.Handle("/", addNoCacheHeaders(http.FileServer(http.Dir(webuiDir))))
 
     log.Fatal(http.ListenAndServe(*addr, router))

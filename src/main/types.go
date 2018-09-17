@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/gorilla/websocket"
 )
+
+
 // Command structure contains command information.
 type Command struct {
     Cmd string `json:"cmd"`
