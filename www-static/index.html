@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>SoolSang Web UI</title>
- 
 <style >
-@import("./www-static/noto-sans-korean-webfont/css/noto-sans-korean.css");
+@import("/noto-sans-korean-webfont/css/noto-sans-korean.css");
 * {
   box-sizing: border-box;
   padding: 0;
@@ -303,7 +302,7 @@ select {
         </li>        
         <li class="active">
             <div class="content__wrapper" >
-                <div class="cups" onLoad="pagestart()">
+                <div class="cups">
                 </div>
                 <div>
                   <button class="settingbutton" id="send">REGISTER</button>
@@ -318,20 +317,24 @@ select {
   <script src="./codepen.js"></script>
   <script src='./jquery-3.3.1.min.js'></script>
   <script>
-    reload();
+    reload(0);
 
     function autoRefresh_sample_div()
     {
       clickedTab = $(".tabs .active");
       var clickedTabIndex = clickedTab.index();
+
       if (clickedTabIndex == 2) {
-      var currentLocation = window.location;
         console.log("setting");
+        var table = document.getElementById("mytable");
+        var rowsCount = table.rows.length;
+        console.log("table cnt is " + rowsCount);
         $(".tabs > .active").css("border-bottom-color", "#1780E0");
-        reload();
+        reload(rowsCount);
       }
     }
-    setInterval('autoRefresh_sample_div()', 5000); 
+
+    setInterval('autoRefresh_sample_div()', 3000); 
     $(document).ready(function () {
         // Variables
         var clickedTab = $(".tabs > .active");
@@ -399,14 +402,15 @@ select {
                   console.log("setting");
 
                   $(".tabs > .active").css("border-bottom-color", "#1780E0");
-                  reload();
+                    reload(0);
                 }
 
             });
         });
     });
-    
-    function reload() {
+
+    function reload(rowsCount) {
+      var cnt = 0;
       var filePath = "cups.json"
       var result = null;
       var jsonobj = null;
@@ -420,8 +424,21 @@ select {
           console.log("xmlhttp.responseText =" + this.responseText);
           result = xmlhttp.responseText;
           jsonobj = JSON.parse(result);
+          for (j in jsonobj.Lists) {
+            cnt++;
+          }
 
-          display(jsonobj);
+          if (rowsCount != 0) {
+            if (rowsCount != (cnt+1)) {
+              //display(jsonobj);
+              var currentLocation = window.location;
+              currentLocation.reload(true);
+            } else {
+              console.log("Not to be refreshed");
+            }
+          } else {
+            display(jsonobj);
+          }
           console.log("reload completed~~~");
         }
       };
@@ -478,7 +495,7 @@ select {
 
       console.log("reload cup lists~~~");
 
-      outstring = "<div class=cups><table class=mytable>";
+      outstring = "<div class=cups><table class=mytable id=mytable>";
       outstring += "<tr><th class=jb-th-1>ID</th><th class=jb-th-2>IP</th><th class=jb-th-3>How much can you drink?</th>"
 
       for (j in jsonobj.Lists) {

@@ -13,11 +13,15 @@ import (
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
-var upgrader = websocket.Upgrader{} // use default options
+var upgrader = websocket.Upgrader{
+    CheckOrigin: func(r *http.Request) bool {
+        return true
+    },
+} // use default options
 var deviceList []Device
 
 var webuiDir = "www-static"
-var contentsDir = "/www-static/"
+var contentsDir = "./www-static/"
 const contWebInfoFile = "cups.json"
 
 // Static writeCupsInfo writing web-ui json data which includes cups info
@@ -178,6 +182,7 @@ func writePump(c *websocket.Conn, recvCh chan []byte) {
             if !ok {
                 // The hub closed the channel.
                 c.WriteMessage(websocket.CloseMessage, []byte{})
+                log.Printf("close writeMessage")
                 return
             }
             rcv := Command{}
@@ -325,6 +330,8 @@ func start(w http.ResponseWriter, r *http.Request) {
     recvCh := make(chan []byte)
     go readPump(c, recvCh)
     go writePump(c, recvCh)
+
+    log.Printf("Finish start")
 }
 
 // Add http response headers to a response to disable caching
@@ -339,14 +346,16 @@ func addNoCacheHeaders(handler http.Handler) http.HandlerFunc {
     }
 }
 
+
+
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
 
     router := http.NewServeMux()
     router.HandleFunc("/ws", start)
-
     router.Handle("/", addNoCacheHeaders(http.FileServer(http.Dir(webuiDir))))
 
     log.Fatal(http.ListenAndServe(*addr, router))
+    log.Fatal(http.ListenAndServe(":8080", router))
 }
