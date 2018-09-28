@@ -21,7 +21,7 @@ var upgrader = websocket.Upgrader{
 var deviceList []Device
 
 var webuiDir = "www-static"
-var contentsDir = "./www-static/"
+var contentsDir = "/www-static/"
 const contWebInfoFile = "cups.json"
 
 // Static writeCupsInfo writing web-ui json data which includes cups info
